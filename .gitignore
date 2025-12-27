@@ -1,0 +1,15 @@
+# Inventory Dashboard Deployment Files
+
+*.csv
+*.xlsx
+__pycache__/
+*.py[cod]
+*$py.class
+.streamlit/secrets.toml
+venv/
+env/
+.env
+*.pyc
+.DS_Store
+.vscode/
+.idea/
