@@ -161,33 +161,69 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Data File Paths
-DATA_FILE = "inventory_data.csv"
-PRODUCTS_FILE = "products_list.csv"
+import json
+from pathlib import Path
+
+# Storage Configuration
+STORAGE_DIR = os.path.join(os.path.expanduser("~"), ".local", "share", "InventoryDashboard")
+STORAGE_FILE = os.path.join(STORAGE_DIR, "data.json")
+
+# Ensure storage directory exists
+os.makedirs(STORAGE_DIR, exist_ok=True)
+
+# Helper Functions for Storage
+def load_storage():
+    """Load data from JSON storage"""
+    if os.path.exists(STORAGE_FILE):
+        try:
+            with open(STORAGE_FILE, 'r') as f:
+                data = json.load(f)
+            return data
+        except Exception as e:
+            st.error(f"Error reading storage: {e}")
+            return None
+    return None
+
+def save_storage(products, df):
+    """Save data to JSON storage"""
+    try:
+        data = {
+            'products': products,
+            'transactions': df.to_dict('records')
+        }
+        with open(STORAGE_FILE, 'w') as f:
+            json.dump(data, f, indent=4)
+        return True
+    except Exception as e:
+        st.error(f"Error saving storage: {e}")
+        return False
 
 # Default Product List (Initial Options)
 DEFAULT_PRODUCTS = ["Wheat", "Urea", "DAP", "Sarson", "Cow Feed", "Gandyal", "Him Cal", "Liv 52"]
 
 # Product Management Functions
 def load_products():
-    """Load products from CSV file or use defaults"""
-    if os.path.exists(PRODUCTS_FILE):
-        try:
-            products_df = pd.read_csv(PRODUCTS_FILE)
-            return products_df['Product Name'].tolist()
-        except:
-            return DEFAULT_PRODUCTS.copy()
-    else:
-        return DEFAULT_PRODUCTS.copy()
+    """Load products from JSON storage or use defaults"""
+    data = load_storage()
+    if data and 'products' in data:
+        return data['products']
+    return DEFAULT_PRODUCTS.copy()
 
 def save_products(products_list):
-    """Save products list to CSV"""
-    try:
-        products_df = pd.DataFrame({'Product Name': products_list})
-        products_df.to_csv(PRODUCTS_FILE, index=False)
-        return True
-    except Exception as e:
-        st.error(f"Error saving products: {e}")
-        return False
+    """Save products list to JSON storage"""
+    # We need to preserve existing transactions when saving products
+    # Get current df from session state if available, or load from disk
+    if 'df' in st.session_state:
+        df = st.session_state.df
+    else:
+        # Fallback if saving products before df is initialized
+        data = load_storage()
+        if data and 'transactions' in data:
+            df = pd.DataFrame(data['transactions'])
+        else:
+            df = create_empty_dataframe()
+            
+    return save_storage(products_list, df)
 
 def add_product(products_list, new_product):
     """Add a new product to the list"""
@@ -214,11 +250,13 @@ if 'products' not in st.session_state:
 # Initialize Data
 def init_data():
     """Initialize or load existing data"""
-    if os.path.exists(DATA_FILE):
+    data = load_storage()
+    if data and 'transactions' in data:
         try:
-            df = pd.read_csv(DATA_FILE)
-            # Ensure Date column is in string format for display
-            df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y').dt.strftime('%d/%m/%Y')
+            df = pd.DataFrame(data['transactions'])
+            # Ensure safe handling of empty dataframes or missing columns
+            if df.empty:
+                return create_empty_dataframe()
             return df
         except Exception as e:
             st.error(f"Error loading data: {e}")
@@ -235,13 +273,14 @@ def create_empty_dataframe():
     ])
 
 def save_data(df):
-    """Save dataframe to CSV"""
-    try:
-        df.to_csv(DATA_FILE, index=False)
-        return True
-    except Exception as e:
-        st.error(f"Error saving data: {e}")
-        return False
+    """Save dataframe to JSON storage"""
+    # We need to preserve existing products
+    if 'products' in st.session_state:
+        products = st.session_state.products
+    else:
+        products = load_products()
+        
+    return save_storage(products, df)
 
 def calculate_stock_left(df, product, qty_received, qty_sold):
     """Calculate stock left based on previous transactions"""
