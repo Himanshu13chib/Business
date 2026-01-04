@@ -510,9 +510,18 @@ if page == "📊 Dashboard":
 # ========================================
 elif page == "📝 Data Entry":
     st.title("📝 Data Entry Portal")
-    st.markdown("### Add New Transaction")
     
-    with st.form("transaction_form", clear_on_submit=True):
+    # Tab selection for Single vs Bulk entry
+    entry_tab = st.radio(
+        "Select Entry Method",
+        ["📝 Single Transaction", "📊 Bulk Import"],
+        horizontal=True
+    )
+    
+    if entry_tab == "📝 Single Transaction":
+        st.markdown("### Add New Transaction")
+        
+        with st.form("transaction_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
         
         with col1:
@@ -565,7 +574,127 @@ elif page == "📝 Data Entry":
             else:
                 st.error("❌ Failed to save transaction")
     
-    # Show recent transactions
+    elif entry_tab == "📊 Bulk Import":
+        st.markdown("### Bulk Import Transactions")
+        st.info("💡 Import multiple transactions at once using JSON format")
+        
+        # JSON input area
+        json_input = st.text_area(
+            "📋 Paste JSON Data",
+            height=300,
+            placeholder='[{"date": "24/10/2025", "product_name": "Wheat", "quantity_received": 150, "quantity_sold": 23, "cost_price": 1488.00, "selling_price": 1650.00, "remarks": ""}]',
+            help="Paste your JSON data here. Each record should have: date, product_name, quantity_received, quantity_sold, cost_price, selling_price, remarks (optional)"
+        )
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            if st.button("🔍 Preview Data", use_container_width=True):
+                if json_input.strip():
+                    try:
+                        import json
+                        data = json.loads(json_input)
+                        
+                        # Convert to DataFrame for preview
+                        preview_df = pd.DataFrame(data)
+                        
+                        # Validate required columns
+                        required_cols = ['date', 'product_name', 'quantity_received', 'quantity_sold', 'cost_price', 'selling_price']
+                        missing_cols = [col for col in required_cols if col not in preview_df.columns]
+                        
+                        if missing_cols:
+                            st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+                        else:
+                            st.success(f"✅ Found {len(preview_df)} valid records")
+                            st.dataframe(preview_df, use_container_width=True)
+                            
+                    except json.JSONDecodeError as e:
+                        st.error(f"❌ Invalid JSON format: {str(e)}")
+                    except Exception as e:
+                        st.error(f"❌ Error processing data: {str(e)}")
+                else:
+                    st.warning("⚠️ Please paste JSON data first")
+        
+        with col2:
+            if st.button("✅ Import All Records", use_container_width=True, type="primary"):
+                if json_input.strip():
+                    try:
+                        import json
+                        data = json.loads(json_input)
+                        
+                        success_count = 0
+                        error_count = 0
+                        
+                        for record in data:
+                            try:
+                                # Extract data with defaults
+                                date_str = record.get('date', '')
+                                product = record.get('product_name', '')
+                                qty_received = float(record.get('quantity_received', 0))
+                                qty_sold = float(record.get('quantity_sold', 0))
+                                cost_price = float(record.get('cost_price', 0))
+                                selling_price = float(record.get('selling_price', 0))
+                                remarks = record.get('remarks', '')
+                                
+                                # Validate product exists
+                                if product not in st.session_state.products:
+                                    st.session_state.products.append(product)
+                                    save_products(st.session_state.products)
+                                
+                                # Add transaction
+                                st.session_state.df = add_transaction(
+                                    st.session_state.df,
+                                    date_str,
+                                    product,
+                                    qty_received,
+                                    qty_sold,
+                                    cost_price,
+                                    selling_price,
+                                    remarks
+                                )
+                                success_count += 1
+                                
+                            except Exception as e:
+                                error_count += 1
+                                st.error(f"❌ Error in record {success_count + error_count}: {str(e)}")
+                        
+                        # Save all data
+                        if save_data(st.session_state.df):
+                            st.success(f"✅ Successfully imported {success_count} records!")
+                            if error_count > 0:
+                                st.warning(f"⚠️ {error_count} records had errors")
+                            st.balloons()
+                        else:
+                            st.error("❌ Failed to save imported data")
+                            
+                    except json.JSONDecodeError as e:
+                        st.error(f"❌ Invalid JSON format: {str(e)}")
+                    except Exception as e:
+                        st.error(f"❌ Error during import: {str(e)}")
+                else:
+                    st.warning("⚠️ Please paste JSON data first")
+        
+        # Sample format help
+        st.markdown("---")
+        st.subheader("📋 JSON Format Guide")
+        st.code('''
+[
+  {
+    "date": "24/10/2025",
+    "product_name": "Wheat",
+    "quantity_received": 150,
+    "quantity_sold": 23,
+    "cost_price": 1488.00,
+    "selling_price": 1650.00,
+    "remarks": "Optional notes"
+  }
+]
+        ''', language='json')
+        
+        st.markdown("**Required Fields:** date, product_name, quantity_received, quantity_sold, cost_price, selling_price")
+        st.markdown("**Optional Fields:** remarks")
+    
+    # Show recent transactions (for both tabs)
     st.markdown("---")
     st.subheader("📋 Recent Transactions")
     if len(st.session_state.df) > 0:
