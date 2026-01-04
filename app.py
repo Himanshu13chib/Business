@@ -3,6 +3,7 @@ Professional Inventory & Business Intelligence Dashboard
 Agricultural Business Management System
 Author: Senior Python Full-Stack Developer
 Style: Elon Musk Professional - Minimalist, Efficient, Robust
+Version: 2.0 - Enhanced with Bulk Import Feature
 """
 
 import streamlit as st
