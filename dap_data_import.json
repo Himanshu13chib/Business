@@ -1,0 +1,137 @@
+[
+  {
+    "date": "26/11/2025",
+    "product_name": "DAP",
+    "quantity_received": 90,
+    "quantity_sold": 18,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": "Initial DAP stock"
+  },
+  {
+    "date": "27/11/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 7,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "28/11/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 10,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "30/11/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 6,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "01/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 8,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "02/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "03/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "06/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "07/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 1,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "10/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 3,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "13/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "17/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 1,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "18/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "20/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 1,
+    "cost_price": 1334.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  },
+  {
+    "date": "24/12/2025",
+    "product_name": "DAP",
+    "quantity_received": 0,
+    "quantity_sold": 2,
+    "cost_price": 1344.00,
+    "selling_price": 1500.00,
+    "remarks": ""
+  }
+]

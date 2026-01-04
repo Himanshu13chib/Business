@@ -522,57 +522,57 @@ elif page == "📝 Data Entry":
         st.markdown("### Add New Transaction")
         
         with st.form("transaction_form", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            date_input = st.date_input("📅 Date", datetime.now())
-            product = st.selectbox("🏷️ Product Name", st.session_state.products)
-            qty_received = st.number_input("📦 Quantity Received", min_value=0.0, value=0.0, step=1.0)
-            qty_sold = st.number_input("🛒 Quantity Sold", min_value=0.0, value=0.0, step=1.0)
-            cost_price = st.number_input("💵 Cost Price (per unit)", min_value=0.0, value=0.0, step=0.01)
-        
-        with col2:
-            selling_price = st.number_input("💰 Selling Price (per unit)", min_value=0.0, value=0.0, step=0.01)
-            remarks = st.text_area("📝 Remarks", "")
+            col1, col2 = st.columns(2)
             
-            # Show calculated preview
-            st.markdown("### 📊 Transaction Preview")
-            preview_stock = calculate_stock_left(st.session_state.df, product, qty_received, qty_sold)
-            preview_purchase = qty_received * cost_price
-            preview_sales = qty_sold * selling_price
-            preview_profit = (selling_price - cost_price) * qty_sold
+            with col1:
+                date_input = st.date_input("📅 Date", datetime.now())
+                product = st.selectbox("🏷️ Product Name", st.session_state.products)
+                qty_received = st.number_input("📦 Quantity Received", min_value=0.0, value=0.0, step=1.0)
+                qty_sold = st.number_input("🛒 Quantity Sold", min_value=0.0, value=0.0, step=1.0)
+                cost_price = st.number_input("💵 Cost Price (per unit)", min_value=0.0, value=0.0, step=0.01)
             
-            st.info(f"""
-            **Stock After Transaction:** {preview_stock:,.2f} units  
-            **Total Purchase:** ₹{preview_purchase:,.2f}  
-            **Total Sales:** ₹{preview_sales:,.2f}  
-            **Profit:** ₹{preview_profit:,.2f}
-            """)
-        
-        submitted = st.form_submit_button("✅ Add Transaction", use_container_width=True)
-        
-        if submitted:
-            # Convert date to DD/MM/YYYY format
-            date_str = date_input.strftime('%d/%m/%Y')
+            with col2:
+                selling_price = st.number_input("💰 Selling Price (per unit)", min_value=0.0, value=0.0, step=0.01)
+                remarks = st.text_area("📝 Remarks", "")
+                
+                # Show calculated preview
+                st.markdown("### 📊 Transaction Preview")
+                preview_stock = calculate_stock_left(st.session_state.df, product, qty_received, qty_sold)
+                preview_purchase = qty_received * cost_price
+                preview_sales = qty_sold * selling_price
+                preview_profit = (selling_price - cost_price) * qty_sold
+                
+                st.info(f"""
+                **Stock After Transaction:** {preview_stock:,.2f} units  
+                **Total Purchase:** ₹{preview_purchase:,.2f}  
+                **Total Sales:** ₹{preview_sales:,.2f}  
+                **Profit:** ₹{preview_profit:,.2f}
+                """)
             
-            # Add transaction
-            st.session_state.df = add_transaction(
-                st.session_state.df,
-                date_str,
-                product,
-                qty_received,
-                qty_sold,
-                cost_price,
-                selling_price,
-                remarks
-            )
+            submitted = st.form_submit_button("✅ Add Transaction", use_container_width=True)
             
-            # Save to file
-            if save_data(st.session_state.df):
-                st.success("✅ Transaction added successfully!")
-                st.balloons()
-            else:
-                st.error("❌ Failed to save transaction")
+            if submitted:
+                # Convert date to DD/MM/YYYY format
+                date_str = date_input.strftime('%d/%m/%Y')
+                
+                # Add transaction
+                st.session_state.df = add_transaction(
+                    st.session_state.df,
+                    date_str,
+                    product,
+                    qty_received,
+                    qty_sold,
+                    cost_price,
+                    selling_price,
+                    remarks
+                )
+                
+                # Save to file
+                if save_data(st.session_state.df):
+                    st.success("✅ Transaction added successfully!")
+                    st.balloons()
+                else:
+                    st.error("❌ Failed to save transaction")
     
     elif entry_tab == "📊 Bulk Import":
         st.markdown("### Bulk Import Transactions")
